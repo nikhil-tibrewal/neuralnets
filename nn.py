@@ -12,6 +12,8 @@ import numpy as np
 import scipy.io
 from scipy.optimize import fmin_cg
 from sklearn.metrics import accuracy_score
+import sklearn.datasets as datasets
+from sklearn import cross_validation
 
 # Sigmoid function
 def sigmoid(z):
@@ -108,24 +110,15 @@ def nnGradFunction(Theta, input_layer_size, hidden_layer_size, num_labels, X, y,
 # Main code
 # Load data into variables X and y
 
-mat = scipy.io.loadmat('ex4data1.mat')
-y = mat['y']
-X = mat['X']
-# change 10 to 0
-indices10 = np.where(y == 10)[0]
-y[indices10] = 0
+digits = datasets.load_digits()
+X = digits.data
+y = digits.target
 
-# split into test and train data (4500, 500 split)
-Xsplit = np.split(X, np.array([450, 500, 950, 1000, 1450, 1500, 1950, 2000, 2450, 2500, 2950, 3000, 3450, 3500, 3950, 4000, 4450, 4500, 4950, 5000]))
-ysplit = np.split(y, np.array([450, 500, 950, 1000, 1450, 1500, 1950, 2000, 2450, 2500, 2950, 3000, 3450, 3500, 3950, 4000, 4450, 4500, 4950, 5000]))
-y_train = np.vstack((ysplit[0], ysplit[2], ysplit[4], ysplit[6], ysplit[8], ysplit[10], ysplit[12], ysplit[14], ysplit[16], ysplit[18])) 
-X_train = np.vstack((Xsplit[0], Xsplit[2], Xsplit[4], Xsplit[6], Xsplit[8], Xsplit[10], Xsplit[12], Xsplit[14], Xsplit[16], Xsplit[18])) 
-y_test = np.vstack((ysplit[1], ysplit[3], ysplit[5], ysplit[7], ysplit[9], ysplit[11], ysplit[13], ysplit[15], ysplit[17], ysplit[19]))
-X_test = np.vstack((Xsplit[1], Xsplit[3], Xsplit[5], Xsplit[7], Xsplit[9], Xsplit[11], Xsplit[13], Xsplit[15], Xsplit[17], Xsplit[19]))
+X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y, test_size=0.1)
 
 input_layer_size  = X_train.shape[1]
 hidden_layer_size = 25
-num_labels = 10
+num_labels = len(set(y))
 lambdaPar = 1
 epsilon_init = 0.12
 
